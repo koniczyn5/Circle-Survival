@@ -1,2 +1,2 @@
 # Cricle-Survival
-A simple arcade survivla game in Unity.
+A simple arcade survival game in Unity.
