@@ -11,15 +11,11 @@ public class MainMenuController: MonoBehaviour
     public void Start()
     {
         _highScoreText=GameObject.Find("HS_value_text").GetComponent<Text>();
-        _highScoreText.text=PlayerPrefs.GetFloat("HighScore", 0).ToString();
+        _highScoreText.text=PlayerPrefs.GetFloat("HighScore", 0).ToString("0.00")+"s";
     }
 
     public void Play()
     {
         SceneManager.LoadScene("Game");
-    }
-    public void Exit()
-    {
-        Application.Quit();
     }
 }
