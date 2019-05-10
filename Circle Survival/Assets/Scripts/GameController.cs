@@ -50,7 +50,7 @@ public class GameController : MonoBehaviour
         GameObject.Find("Board").SetActive(false);
         GameObject newRecord =GameObject.Find(("NewRecord_text"));
         newRecord.transform.localScale = new Vector3(0, 0, 0);
-        GameObject.Find("GameOver_score_text").GetComponent<Text>().text=_time.ToString("#0.00") + "s";
+        GameObject.Find("GameOver_score_value").GetComponent<Text>().text=_time.ToString("#0.00") + "s";
         _gameOverPanel.transform.localScale=new Vector3(1,1,1);
         float highScore = PlayerPrefs.GetFloat("HighScore", 0);
         if (!(_time > highScore)) return;

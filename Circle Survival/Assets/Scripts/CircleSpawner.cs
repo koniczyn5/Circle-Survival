@@ -45,8 +45,6 @@ public class CircleSpawner : MonoBehaviour
         _minY = GetComponent<RectTransform>().rect.yMin+_circleRadius;
         _maxY = GetComponent<RectTransform>().rect.yMax-_circleRadius;
         
-        Debug.Log(_circleRadius);
-        
         _activeCirclesCenters=new HashSet<Vector3>();
         
         _circlePool = circlePool;
