@@ -8,6 +8,15 @@ public class GameController : MonoBehaviour
     private Text _timeText;
     private float _time;
     private bool _isStarted;
+    [Header("ObjectPool Variables")]
+    [SerializeField] private GameObject circlePrefab;
+    [SerializeField] private int circlePoolSize = 10;
+
+    [Header("CircleSpawner Variables")]
+    [SerializeField] private float circleSpawnDelay=1.0f;
+    [SerializeField] private float minCircleTimeToExplosion = 2.0f;
+    [SerializeField] private float maxCircleTimeToExplosion = 4.0f;
+    
     
     //GameOver screen variables
     private GameObject _gameOverPanel;
@@ -20,9 +29,9 @@ public class GameController : MonoBehaviour
         
         _gameOverPanel=GameObject.Find("GameOver_panel");
         _gameOverPanel.transform.localScale=new Vector3(0,0,0);
-        
-        //TODO
-        GameObject.Find("Board").GetComponent<CircleSpawner>().Initialize(1.0f,new PrefabPool(1,new GameObject()),new PrefabPool(1,new GameObject()) );
+        GameObject.Find("Board").GetComponent<CircleSpawner>().Initialize(
+            circleSpawnDelay, minCircleTimeToExplosion, maxCircleTimeToExplosion,new PrefabPool(circlePoolSize,circlePrefab),
+            circlePrefab.GetComponent<RectTransform>().rect.width/2,GameOver);
     }
 
     // Update is called once per frame
@@ -31,12 +40,12 @@ public class GameController : MonoBehaviour
         if (!_isStarted) return;
         _time += Time.deltaTime;
         _timeText.text = _time.ToString("#0.00") + "s";
-        if(_time>5.0f) GameOver();
     }
 
     void GameOver()
     {
         _isStarted = false;
+        GameObject.Find("Board").SetActive(false);
         GameObject newRecord =GameObject.Find(("NewRecord_text"));
         newRecord.transform.localScale = new Vector3(0, 0, 0);
         GameObject.Find("GameOver_score_text").GetComponent<Text>().text=_time.ToString("#0.00") + "s";

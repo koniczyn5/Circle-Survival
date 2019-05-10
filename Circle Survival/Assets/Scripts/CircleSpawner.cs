@@ -1,48 +1,53 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class CircleSpawner : MonoBehaviour
 {
     private float _circleSpawnDelay;
     private float _spawnTimer;
+    private float _minCircleTimeToExplosion;
+    private float _maxCircleTimeToExplosion;
+
+    private CircleType[] _circleTypes;
 
     private float _minX;
     private float _maxX;
     private float _minY;
     private float _maxY;
+    private float _circleRadius;
 
-    private IPrefabPool _greenCirclePool;
-    private IPrefabPool _blackCirclePool;
+    private IPrefabPool _circlePool;
 
-    public void Initialize(float circleSpawnDelay, IPrefabPool greenCirclePool, IPrefabPool blackCirclePool)
+    private Action _gameOver;
+
+    public void Initialize(float circleSpawnDelay, float minCircleTimeToExplosion, float maxCircleTimeToExplosion, IPrefabPool circlePool,float circleRadius, Action gameOver)
     {
         _circleSpawnDelay = circleSpawnDelay;
-        _greenCirclePool = greenCirclePool;
-        _blackCirclePool = blackCirclePool;
-
-        Vector3[] boardCorners = new Vector3[4];
-        GetComponent<RectTransform>().GetLocalCorners(boardCorners);
-        _minX = boardCorners[0].x;
-        _maxX = boardCorners[2].x;
-        _minY = boardCorners[0].y;
-        _maxY = boardCorners[2].y;
-
+        _spawnTimer = _circleSpawnDelay;
+        _circlePool = circlePool;
+        _gameOver = gameOver;
+        _minCircleTimeToExplosion = minCircleTimeToExplosion;
+        _maxCircleTimeToExplosion = maxCircleTimeToExplosion;
+        _circleRadius = circleRadius;
+        _circleTypes = new[]
+        {
+            new CircleType(PositiveAction, NegativeAction, Color.green),
+            new CircleType(NegativeAction, PositiveAction, Color.black, false, Color.black),
+        };
+        
+        _minX = GetComponent<RectTransform>().rect.xMin+_circleRadius;
+        _maxX = GetComponent<RectTransform>().rect.xMax-_circleRadius;
+        _minY = GetComponent<RectTransform>().rect.yMin+_circleRadius;
+        _maxY = GetComponent<RectTransform>().rect.yMax-_circleRadius;
     }
 
     void Update()
     {
-        if (_spawnTimer < _circleSpawnDelay)
+        if (_spawnTimer >= _circleSpawnDelay)
         {
-            if (RandomCircleType() < 9)
-            {
-                InitializeGreenCircle();
-            }
-            else
-            {
-                InitializeBlackCircle();
-            }
-            _spawnTimer = 0;
+           InitializeCircle(RandomCircleType());
+           _spawnTimer = 0;
         }
         else
         {
@@ -50,25 +55,62 @@ public class CircleSpawner : MonoBehaviour
         }
     }
 
-    private void InitializeGreenCircle()
+    private void InitializeCircle(CircleType circleType)
     {
-       // throw new System.NotImplementedException();
+        GameObject circle = _circlePool.Get();
+        circle.transform.SetParent(transform);
+        circle.transform.localScale=Vector3.one;
+        //circle.transform.localPosition=new Vector3(10000,10000,0);
+        do
+        {
+            SetPosition(circle);
+        } while (IsCollidingWithOther(circle));
+        circle.GetComponent<Circle>().Initialize(circleType,RandomCircleTimeToExplosion(circleType));
     }
 
-    private void InitializeBlackCircle()
+    private void PositiveAction(GameObject circle)
     {
-       // throw new System.NotImplementedException();
+        DecreaseSpawnDelay();
+        ReturnToPool(circle);
+    }
+
+    private void NegativeAction(GameObject circle)
+    {
+        //_gameOver.Invoke();
     }
 
     private void DecreaseSpawnDelay()
     {
-       // throw new System.NotImplementedException();
-        //jakas funkcja matematyczna
+        _circleSpawnDelay *= 0.98f;
+        _minCircleTimeToExplosion *= 0.98f;
+        _maxCircleTimeToExplosion *= 0.98f;
+    }
+
+    private void SetPosition(GameObject circle)
+    {
+        circle.transform.localPosition=new Vector3(RandomXPosition(),RandomYPosition(),0);
+    }
+
+    private bool IsCollidingWithOther(GameObject circle)
+    {
+        int layerMask = 1 << 8;
+        if (Physics2D.OverlapCircle(circle.transform.localPosition, _circleRadius, layerMask) == null)
+        {
+            Debug.Log(true);
+        }
+        return Physics.CheckSphere(circle.transform.localPosition, _circleRadius*2);
     }
     
-    private int RandomCircleType()
+    private CircleType RandomCircleType()
     {
-        return Random.Range(0, 9);
+        if (Random.Range(0, 100) < 90)
+        {
+            return _circleTypes[0];
+        }
+        else
+        {
+            return _circleTypes[1];
+        }
     }
 
     private float RandomXPosition()
@@ -81,13 +123,17 @@ public class CircleSpawner : MonoBehaviour
         return Random.Range(_minY, _maxY);
     }
 
-    private void ReturnToGreenPool(GameObject greenCircle)
+    private float RandomCircleTimeToExplosion(CircleType circleType)
     {
-        _greenCirclePool.Return(greenCircle);
+        if (circleType.CircleColor == Color.green)
+        {
+            return Random.Range(_minCircleTimeToExplosion, _maxCircleTimeToExplosion);
+        }
+        else return 3.0f;
     }
-    
-    private void ReturnToBlackPool(GameObject blackCircle)
+
+    private void ReturnToPool(GameObject circle)
     {
-        _blackCirclePool.Return(blackCircle);
+        _circlePool.Return(circle);
     }
 }
