@@ -100,7 +100,7 @@ public class CircleSpawner : MonoBehaviour
 
     private void DecreaseValues()
     {
-        _circleSpawnDelay *= 0.98f;
+        _circleSpawnDelay *= 0.95f;
         _minCircleTimeToExplosion *= 0.98f;
         _maxCircleTimeToExplosion *= 0.98f;
     }
