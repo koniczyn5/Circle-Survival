@@ -8,14 +8,16 @@ public class GameController : MonoBehaviour
     private Text _timeText;
     private float _time;
     private bool _isStarted;
-    [Header("ObjectPool Variables")]
+    
+    
+    //ObjectPool Variables
     [SerializeField] private GameObject circlePrefab;
-    [SerializeField] private int circlePoolSize = 10;
+    private int circlePoolSize = 1;
 
-    [Header("CircleSpawner Variables")]
-    [SerializeField] private float circleSpawnDelay=1.0f;
-    [SerializeField] private float minCircleTimeToExplosion = 2.0f;
-    [SerializeField] private float maxCircleTimeToExplosion = 4.0f;
+    //CircleSpawner Variables
+    private float circleSpawnDelay=1.0f;
+    private float minCircleTimeToExplosion = 2.0f;
+    private float maxCircleTimeToExplosion = 4.0f;
     
     
     //GameOver screen variables
