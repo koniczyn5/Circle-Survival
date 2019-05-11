@@ -30,7 +30,7 @@ public class GameController : MonoBehaviour
         _timeText.text = _time.ToString("0.00") + "s";
         
         _gameOverPanel=GameObject.Find("GameOver_panel");
-        _gameOverPanel.transform.localScale=new Vector3(0,0,0);
+        _gameOverPanel.SetActive(false);
         GameObject.Find("Board").GetComponent<CircleSpawner>().Initialize(
             circleSpawnDelay, minCircleTimeToExplosion, maxCircleTimeToExplosion,new PrefabPool(circlePoolSize,circlePrefab),
             circlePrefab.GetComponent<RectTransform>().rect.width/2,GameOver);
@@ -46,17 +46,22 @@ public class GameController : MonoBehaviour
 
     void GameOver()
     {
+        _gameOverPanel.SetActive(true);
         _isStarted = false;
         GameObject.Find("Board").SetActive(false);
-        GameObject newRecord =GameObject.Find(("NewRecord_text"));
-        newRecord.transform.localScale = new Vector3(0, 0, 0);
+        GameObject newRecord =GameObject.Find("NewRecord_text");
         GameObject.Find("GameOver_score_value").GetComponent<Text>().text=_time.ToString("#0.00") + "s";
-        _gameOverPanel.transform.localScale=new Vector3(1,1,1);
         float highScore = PlayerPrefs.GetFloat("HighScore", 0);
-        if (!(_time > highScore)) return;
-        PlayerPrefs.SetFloat("HighScore",_time);
-        newRecord.transform.localScale = new Vector3(1, 1, 1);
-        PlayerPrefs.Save();
+        if (_time > highScore)
+        {
+            PlayerPrefs.SetFloat("HighScore", _time);
+            newRecord.SetActive(true);
+            PlayerPrefs.Save();
+        }
+        else
+        {
+            newRecord.SetActive(false);
+        }
     }
 
     public void BackToMenu()
