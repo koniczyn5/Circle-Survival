@@ -12,12 +12,13 @@ public class GameController : MonoBehaviour
     
     //ObjectPool Variables
     [SerializeField] private GameObject circlePrefab;
-    private int circlePoolSize = 1;
+    private const int CirclePoolSize = 3;
 
     //CircleSpawner Variables
-    private float circleSpawnDelay=1.0f;
-    private float minCircleTimeToExplosion = 2.0f;
-    private float maxCircleTimeToExplosion = 4.0f;
+    private readonly float _circleSpawnDelay=1.0f;
+    private readonly float _minCircleTimeToExplosion = 2.0f;
+    private readonly float _maxCircleTimeToExplosion = 4.0f;
+    private CircleSpawner _circleSpawner;
     
     
     //GameOver screen variables
@@ -31,9 +32,10 @@ public class GameController : MonoBehaviour
         
         _gameOverPanel=GameObject.Find("GameOver_panel");
         _gameOverPanel.SetActive(false);
-        GameObject.Find("Board").GetComponent<CircleSpawner>().Initialize(
-            circleSpawnDelay, minCircleTimeToExplosion, maxCircleTimeToExplosion,new PrefabPool(circlePoolSize,circlePrefab),
+        _circleSpawner=new CircleSpawner(GameObject.Find("Board"),_circleSpawnDelay,
+            _minCircleTimeToExplosion,_maxCircleTimeToExplosion,new PrefabPool(CirclePoolSize,circlePrefab),
             circlePrefab.GetComponent<RectTransform>().rect.width/2,GameOver);
+        
     }
 
     // Update is called once per frame
@@ -42,9 +44,10 @@ public class GameController : MonoBehaviour
         if (!_isStarted) return;
         _time += Time.deltaTime;
         _timeText.text = _time.ToString("#0.00") + "s";
+        _circleSpawner.Update();
     }
 
-    void GameOver()
+    private void GameOver()
     {
         _gameOverPanel.SetActive(true);
         _isStarted = false;

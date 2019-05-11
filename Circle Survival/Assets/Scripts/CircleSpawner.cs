@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class CircleSpawner : MonoBehaviour
+public class CircleSpawner
 {
     //Spawning variables
     private float _circleSpawnDelay;
@@ -12,38 +12,42 @@ public class CircleSpawner : MonoBehaviour
     private float _minCircleTimeToExplosion;
     private float _maxCircleTimeToExplosion;
     //Circle types
-    private CircleType[] _circleTypes;
+    private readonly CircleType[] _circleTypes;
     
-    private float _circleRadius;
+    private readonly float _circleRadius;
     //Board bounds
-    private float _minX;
-    private float _maxX;
-    private float _minY;
-    private float _maxY;
+    private readonly float _minX;
+    private readonly float _maxX;
+    private readonly float _minY;
+    private readonly float _maxY;
     
-    private HashSet<Vector3> _activeCirclesCenters;
+    private readonly HashSet<Vector3> _activeCirclesCenters;
 
-    private IPrefabPool _circlePool;
+    private readonly IPrefabPool _circlePool;
 
-    private Action _gameOver;
+    private readonly Action _gameOver;
 
     private int _circlesDestroyed;
+    
+    private readonly Transform _boardTransform;
 
-    public void Initialize(float circleSpawnDelay, float minCircleTimeToExplosion, 
+    public CircleSpawner(GameObject board, float circleSpawnDelay, float minCircleTimeToExplosion, 
         float maxCircleTimeToExplosion, IPrefabPool circlePool,float circleRadius, Action gameOver)
     {
         _circleSpawnDelay = circleSpawnDelay;
         _spawnTimer = _circleSpawnDelay;
+        
+        _boardTransform = board.transform;
         
         _minCircleTimeToExplosion = minCircleTimeToExplosion;
         _maxCircleTimeToExplosion = maxCircleTimeToExplosion;
         
         _circleRadius = circleRadius;
         
-        _minX = GetComponent<RectTransform>().rect.xMin+_circleRadius;
-        _maxX = GetComponent<RectTransform>().rect.xMax-_circleRadius;
-        _minY = GetComponent<RectTransform>().rect.yMin+_circleRadius;
-        _maxY = GetComponent<RectTransform>().rect.yMax-_circleRadius;
+        _minX = board.GetComponent<RectTransform>().rect.xMin+_circleRadius;
+        _maxX = board.GetComponent<RectTransform>().rect.xMax-_circleRadius;
+        _minY = board.GetComponent<RectTransform>().rect.yMin+_circleRadius;
+        _maxY = board.GetComponent<RectTransform>().rect.yMax-_circleRadius;
         
         _activeCirclesCenters=new HashSet<Vector3>();
         
@@ -56,11 +60,9 @@ public class CircleSpawner : MonoBehaviour
             new CircleType(PositiveAction, NegativeAction, Color.green),
             new CircleType(NegativeAction, PositiveAction, Color.black, false, Color.black),
         };
-        
-        
     }
 
-    void Update()
+    public void Update()
     {
         if (_spawnTimer >= _circleSpawnDelay)
         {
@@ -77,7 +79,7 @@ public class CircleSpawner : MonoBehaviour
     {
         GameObject circle = _circlePool.Get();
         
-        circle.transform.SetParent(transform);
+        circle.transform.SetParent(_boardTransform);
         circle.transform.localScale=Vector3.one;
         
         SpawnCircle(circle);
@@ -109,7 +111,6 @@ public class CircleSpawner : MonoBehaviour
         {
             if (Vector3.Distance(circleCenter, t) < _circleRadius * 2) return true;
         }
-
         return false;
     }
 
@@ -121,11 +122,9 @@ public class CircleSpawner : MonoBehaviour
         {
             safety++;
             circleCenter=new Vector3(RandomXPosition(),RandomYPosition(),0);
-            if (safety > 50)
-            {
-                _gameOver.Invoke();
-                throw new TimeoutException();
-            }
+            if (safety <= 50) continue;
+            _gameOver.Invoke();
+            throw new TimeoutException();
         } while (IsCollidingWithOther(circleCenter));
 
         circle.transform.localPosition = circleCenter;
@@ -134,14 +133,7 @@ public class CircleSpawner : MonoBehaviour
     
     private CircleType RandomCircleType()
     {
-        if (Random.Range(0, 100) < 90)
-        {
-            return _circleTypes[0];
-        }
-        else
-        {
-            return _circleTypes[1];
-        }
+        return Random.Range(0, 100) < 90 ? _circleTypes[0] : _circleTypes[1];
     }
 
     private float RandomXPosition()
@@ -156,11 +148,7 @@ public class CircleSpawner : MonoBehaviour
 
     private float RandomCircleTimeToExplosion(CircleType circleType)
     {
-        if (circleType.CircleColor == Color.green)
-        {
-            return Random.Range(_minCircleTimeToExplosion, _maxCircleTimeToExplosion);
-        }
-        else return 3.0f;
+        return circleType.CircleColor == Color.green ? Random.Range(_minCircleTimeToExplosion, _maxCircleTimeToExplosion) : 3.0f;
     }
 
     private void ReturnToPool(GameObject circle)
