@@ -5,12 +5,12 @@ using UnityEngine;
 
 public class CircleType
 {
-    public Action<GameObject> OnTapAction { get; }
-    public Action<GameObject> OnExplosionAction { get; }
-    public Color CircleColor { get; }
-    public bool IsProgressActive { get; }
-    public Color ProgressColor { get; }
-    
+    public Action<GameObject> OnTapAction { get; private set; }
+    public Action<GameObject> OnExplosionAction { get; private set; }
+    public Color CircleColor { get; private set; }
+    public bool IsProgressActive { get; private set; }
+    public Color ProgressColor { get; private set; }
+
     public CircleType(Action<GameObject> onTapAction, Action<GameObject> onExplosionAction, Color circleColor)
     {
         OnTapAction = onTapAction;

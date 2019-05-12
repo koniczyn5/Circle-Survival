@@ -15,9 +15,9 @@ public class GameController : MonoBehaviour
     private const int CirclePoolSize = 3;
 
     //CircleSpawner Variables
-    private readonly float _circleSpawnDelay=1.0f;
-    private readonly float _minCircleTimeToExplosion = 2.0f;
-    private readonly float _maxCircleTimeToExplosion = 4.0f;
+    private const float CircleSpawnDelay = 1.0f;
+    private const float MinCircleTimeToExplosion = 2.0f;
+    private const float MaxCircleTimeToExplosion = 4.0f;
     private CircleSpawner _circleSpawner;
     
     
@@ -32,8 +32,8 @@ public class GameController : MonoBehaviour
         
         _gameOverPanel=GameObject.Find("GameOver_panel");
         _gameOverPanel.SetActive(false);
-        _circleSpawner=new CircleSpawner(GameObject.Find("Board"),_circleSpawnDelay,
-            _minCircleTimeToExplosion,_maxCircleTimeToExplosion,new PrefabPool(CirclePoolSize,circlePrefab),
+        _circleSpawner=new CircleSpawner(GameObject.Find("Board"),CircleSpawnDelay,
+            MinCircleTimeToExplosion,MaxCircleTimeToExplosion,new PrefabPool(CirclePoolSize,circlePrefab),
             circlePrefab.GetComponent<RectTransform>().rect.width/2,GameOver);
         
     }
