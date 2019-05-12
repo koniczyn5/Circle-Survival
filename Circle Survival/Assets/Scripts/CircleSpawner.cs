@@ -103,7 +103,9 @@ public class CircleSpawner
 
     private void DecreaseValues()
     {
-        float factor = (float) Math.Log(_circlesDestroyed);
+        float factor;
+        if(_circlesDestroyed==0) factor=1;
+        else factor= (float) Math.Log(_circlesDestroyed);
         _circleSpawnDelay =Math.Min((_startingCircleSpawnDelay/factor),_startingCircleSpawnDelay);
         _minCircleTimeToExplosion *= 0.99f;
         _maxCircleTimeToExplosion *= 0.99f;

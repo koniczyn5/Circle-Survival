@@ -3,10 +3,12 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class MainMenuController: MonoBehaviour
-{ 
+{
+    private Text _highScoreText;
     public void Awake()
     {
-        GameObject.Find("HS_value_text").GetComponent<Text>().text=PlayerPrefs.GetFloat("HighScore", 0).ToString("#0.00")+"s";
+        _highScoreText=GameObject.Find("HS_value_text").GetComponent<Text>();
+        _highScoreText.text=PlayerPrefs.GetFloat("HighScore", 0).ToString("#0.00")+"s";
     }
     public void Play()
     {
@@ -16,6 +18,6 @@ public class MainMenuController: MonoBehaviour
     public void ResetHs()
     {
         PlayerPrefs.DeleteKey("HighScore");
-        GameObject.Find("HS_value_text").GetComponent<Text>().text=PlayerPrefs.GetFloat("HighScore", 0).ToString("#0.00")+"s";
+        _highScoreText.text=PlayerPrefs.GetFloat("HighScore", 0).ToString("#0.00")+"s";
     }
 }
