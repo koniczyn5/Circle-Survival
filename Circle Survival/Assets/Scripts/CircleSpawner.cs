@@ -6,6 +6,7 @@ using Random = UnityEngine.Random;
 public class CircleSpawner
 {
     //Spawning variables
+    private readonly float _startingCircleSpawnDelay;
     private float _circleSpawnDelay;
     private float _spawnTimer;
     //Circle timer variables
@@ -34,6 +35,7 @@ public class CircleSpawner
     public CircleSpawner(GameObject board, float circleSpawnDelay, float minCircleTimeToExplosion, 
         float maxCircleTimeToExplosion, IPrefabPool circlePool,float circleRadius, Action gameOver)
     {
+        _startingCircleSpawnDelay = circleSpawnDelay;
         _circleSpawnDelay = circleSpawnDelay;
         _spawnTimer = _circleSpawnDelay;
         
@@ -89,6 +91,7 @@ public class CircleSpawner
 
     private void PositiveAction(GameObject circle)
     {
+        _circlesDestroyed++;
         DecreaseValues();
         ReturnToPool(circle);
     }
@@ -100,9 +103,9 @@ public class CircleSpawner
 
     private void DecreaseValues()
     {
-        _circleSpawnDelay *= 0.95f;
-        _minCircleTimeToExplosion *= 0.98f;
-        _maxCircleTimeToExplosion *= 0.98f;
+        _circleSpawnDelay =(float) (_startingCircleSpawnDelay/Math.Log(_circlesDestroyed));
+        _minCircleTimeToExplosion *= 0.99f;
+        _maxCircleTimeToExplosion *= 0.99f;
     }
     
     private bool IsCollidingWithOther(Vector3 circleCenter)
