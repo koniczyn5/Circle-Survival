@@ -36,7 +36,7 @@ public class CircleSpawner
         float maxCircleTimeToExplosion, IPrefabPool circlePool,float circleRadius, Action gameOver)
     {
         _startingCircleSpawnDelay = circleSpawnDelay;
-        _circleSpawnDelay = _startingCircleSpawnDelay/2;
+        _circleSpawnDelay = _startingCircleSpawnDelay;
         _spawnTimer = _circleSpawnDelay;
         
         _boardTransform = board.transform;
@@ -104,7 +104,7 @@ public class CircleSpawner
     private void DecreaseValues()
     {
         float factor = (float) Math.Log(_circlesDestroyed);
-        _circleSpawnDelay =Math.Min((_startingCircleSpawnDelay/(factor*factor)),_startingCircleSpawnDelay/2);
+        _circleSpawnDelay =Math.Min((_startingCircleSpawnDelay/factor),_startingCircleSpawnDelay);
         _minCircleTimeToExplosion *= 0.99f;
         _maxCircleTimeToExplosion *= 0.99f;
     }
