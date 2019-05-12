@@ -15,7 +15,7 @@ public class GameController : MonoBehaviour
     private const int CirclePoolSize = 3;
 
     //CircleSpawner Variables
-    private const float CircleSpawnDelay = 1.0f;
+    private const float CircleSpawnDelay = 6.0f;
     private const float MinCircleTimeToExplosion = 2.0f;
     private const float MaxCircleTimeToExplosion = 4.0f;
     private CircleSpawner _circleSpawner;
